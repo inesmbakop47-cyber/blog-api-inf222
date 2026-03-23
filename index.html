@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlogVerse – INF222</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --surface2: #1c1c27;
+    --accent1: #ff3cac;
+    --accent2: #7b2fff;
+    --accent3: #00f5d4;
+    --accent4: #ffb800;
+    --text: #f0f0f8;
+    --text-muted: #8888aa;
+    --border: rgba(255,255,255,0.08);
+    --glow1: rgba(255,60,172,0.3);
+    --glow2: rgba(123,47,255,0.3);
+    --glow3: rgba(0,245,212,0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated background */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(ellipse at 20% 20%, rgba(123,47,255,0.12) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(255,60,172,0.12) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(0,245,212,0.06) 0%, transparent 60%);
+    z-index: 0;
+    pointer-events: none;
+    animation: bgShift 12s ease-in-out infinite alternate;
+  }
+
+  @keyframes bgShift {
+    0% { transform: translate(0,0) rotate(0deg); }
+    100% { transform: translate(2%,2%) rotate(3deg); }
+  }
+
+  /* HEADER */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+  }
+
+  .header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.6rem;
+    background: linear-gradient(135deg, var(--accent1), var(--accent2), var(--accent3));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.5px;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+  }
+
+  /* BUTTONS */
+  .btn {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 0.5rem 1.25rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    letter-spacing: 0.3px;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent1), var(--accent2));
+    color: white;
+    box-shadow: 0 0 20px var(--glow1);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 30px var(--glow1), 0 0 60px var(--glow2);
+  }
+
+  .btn-ghost {
+    background: var(--surface2);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+
+  .btn-ghost:hover {
+    color: var(--text);
+    border-color: var(--accent3);
+    box-shadow: 0 0 15px var(--glow3);
+  }
+
+  .btn-danger {
+    background: rgba(255,60,60,0.15);
+    color: #ff6060;
+    border: 1px solid rgba(255,60,60,0.3);
+  }
+
+  .btn-danger:hover {
+    background: rgba(255,60,60,0.25);
+    box-shadow: 0 0 15px rgba(255,60,60,0.3);
+  }
+
+  .btn-edit {
+    background: rgba(255,184,0,0.15);
+    color: var(--accent4);
+    border: 1px solid rgba(255,184,0,0.3);
+  }
+
+  .btn-edit:hover {
+    background: rgba(255,184,0,0.25);
+    box-shadow: 0 0 15px rgba(255,184,0,0.3);
+  }
+
+  /* MAIN LAYOUT */
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  /* HERO */
+  .hero {
+    text-align: center;
+    padding: 3rem 0 2rem;
+  }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 800;
+    line-height: 1.05;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #fff 0%, var(--accent3) 40%, var(--accent1) 80%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero p {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    max-width: 500px;
+    margin: 0 auto 2rem;
+    line-height: 1.7;
+  }
+
+  /* SEARCH & FILTERS */
+  .toolbar {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+    align-items: center;
+  }
+
+  .search-wrap {
+    flex: 1;
+    min-width: 220px;
+    position: relative;
+  }
+
+  .search-wrap input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.7rem 1rem 0.7rem 2.8rem;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .search-wrap input:focus {
+    border-color: var(--accent3);
+    box-shadow: 0 0 15px var(--glow3);
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 0.9rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 1rem;
+  }
+
+  .filter-select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.7rem 1rem;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+
+  .filter-select:focus {
+    border-color: var(--accent2);
+  }
+
+  /* STATS BAR */
+  .stats-bar {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .stat-pill {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 0.4rem 1rem;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .stat-pill span {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  /* ARTICLES GRID */
+  .articles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .article-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    animation: fadeInUp 0.5s ease both;
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .article-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent1), var(--accent2), var(--accent3));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .article-card:hover {
+    border-color: rgba(255,255,255,0.15);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 30px var(--glow2);
+  }
+
+  .article-card:hover::before { opacity: 1; }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+    gap: 0.5rem;
+  }
+
+  .categorie-badge {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 0.25rem 0.75rem;
+    border-radius: 100px;
+    white-space: nowrap;
+  }
+
+  .cat-tech { background: rgba(123,47,255,0.2); color: #a87fff; border: 1px solid rgba(123,47,255,0.3); }
+  .cat-dev { background: rgba(0,245,212,0.15); color: #00f5d4; border: 1px solid rgba(0,245,212,0.3); }
+  .cat-data { background: rgba(255,184,0,0.15); color: #ffb800; border: 1px solid rgba(255,184,0,0.3); }
+  .cat-default { background: rgba(255,60,172,0.15); color: #ff3cac; border: 1px solid rgba(255,60,172,0.3); }
+
+  .article-id {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    opacity: 0.5;
+  }
+
+  .article-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 0.6rem;
+    line-height: 1.35;
+    color: var(--text);
+  }
+
+  .article-content {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .card-meta {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .meta-item { display: flex; align-items: center; gap: 0.3rem; }
+
+  .tags-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1rem;
+  }
+
+  .tag {
+    font-size: 0.72rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.06);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+
+  .card-actions {
+    display: flex;
+    gap: 0.5rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .card-actions .btn { font-size: 0.78rem; padding: 0.4rem 0.9rem; }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-muted);
+    grid-column: 1/-1;
+  }
+
+  .empty-state .icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.3; }
+  .empty-state h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--text); }
+
+  /* LOADING */
+  .loading {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-muted);
+    grid-column: 1/-1;
+  }
+
+  .spinner {
+    width: 36px; height: 36px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent1);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 1rem;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(8px);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+
+  .modal-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 20px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 560px;
+    max-height: 90vh;
+    overflow-y: auto;
+    transform: scale(0.95) translateY(10px);
+    transition: transform 0.3s;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.5), 0 0 40px var(--glow2);
+  }
+
+  .modal-overlay.active .modal {
+    transform: scale(1) translateY(0);
+  }
+
+  .modal h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, var(--accent1), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .form-group {
+    margin-bottom: 1.1rem;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 0.82rem;
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 0.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    resize: vertical;
+  }
+
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus {
+    border-color: var(--accent2);
+    box-shadow: 0 0 15px var(--glow2);
+  }
+
+  .form-group textarea { min-height: 100px; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+
+  .modal-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+
+  /* TOAST */
+  .toast-container {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 300;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .toast {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.88rem;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    min-width: 220px;
+  }
+
+  .toast.success { border-left: 3px solid var(--accent3); }
+  .toast.error { border-left: 3px solid var(--accent1); }
+
+  @keyframes slideIn { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  @keyframes fadeOut { to { opacity: 0; transform: translateX(100px); } }
+
+  /* DETAIL VIEW */
+  .detail-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(12px);
+    z-index: 150;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+
+  .detail-overlay.active { opacity: 1; pointer-events: all; }
+
+  .detail-card {
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 24px;
+    padding: 2.5rem;
+    max-width: 680px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+    transform: scale(0.95);
+    transition: transform 0.3s;
+  }
+
+  .detail-overlay.active .detail-card { transform: scale(1); }
+
+  .detail-card h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+  }
+
+  .detail-body {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: #c0c0d8;
+    margin: 1.5rem 0;
+    white-space: pre-wrap;
+  }
+
+  /* API STATUS */
+  .api-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #666;
+    transition: background 0.3s;
+  }
+
+  .status-dot.online { background: var(--accent3); box-shadow: 0 0 8px var(--glow3); animation: pulse 2s infinite; }
+  .status-dot.offline { background: var(--accent1); }
+
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent2); }
+
+  @media (max-width: 600px) {
+    .articles-grid { grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 2rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">BlogVerse</div>
+    <div class="header-actions">
+      <div class="api-status">
+        <div class="status-dot" id="statusDot"></div>
+        <span id="statusText">Vérification...</span>
+      </div>
+      <button class="btn btn-primary" onclick="openModal()">+ Nouvel article</button>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="hero">
+    <h1>Votre espace<br>de publication</h1>
+    <p>Créez, gérez et explorez vos articles de blog avec une API REST puissante.</p>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Rechercher un article..." oninput="handleSearch(this.value)">
+    </div>
+    <select class="filter-select" id="filterCategorie" onchange="loadArticles()">
+      <option value="">Toutes les catégories</option>
+      <option value="Technologie">Technologie</option>
+      <option value="Développement">Développement</option>
+      <option value="Base de données">Base de données</option>
+      <option value="Design">Design</option>
+      <option value="Autre">Autre</option>
+    </select>
+    <select class="filter-select" id="filterAuteur" onchange="loadArticles()">
+      <option value="">Tous les auteurs</option>
+    </select>
+    <button class="btn btn-ghost" onclick="loadArticles()">↺ Actualiser</button>
+  </div>
+
+  <div class="stats-bar" id="statsBar"></div>
+
+  <div class="articles-grid" id="articlesGrid">
+    <div class="loading">
+      <div class="spinner"></div>
+      Chargement des articles...
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CRÉER / MODIFIER -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h2 id="modalTitle">✨ Nouvel article</h2>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Titre *</label>
+        <input type="text" id="fTitre" placeholder="Titre de l'article">
+      </div>
+      <div class="form-group">
+        <label>Auteur *</label>
+        <input type="text" id="fAuteur" placeholder="Votre nom">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Contenu *</label>
+      <textarea id="fContenu" placeholder="Rédigez votre article..."></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Catégorie *</label>
+        <select id="fCategorie">
+          <option value="">Choisir...</option>
+          <option>Technologie</option>
+          <option>Développement</option>
+          <option>Base de données</option>
+          <option>Design</option>
+          <option>Autre</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Date *</label>
+        <input type="date" id="fDate">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Tags (séparés par des virgules)</label>
+      <input type="text" id="fTags" placeholder="web, backend, api">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="submitArticle()">Publier →</button>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL OVERLAY -->
+<div class="detail-overlay" id="detailOverlay">
+  <div class="detail-card" id="detailCard">
+    <div id="detailContent"></div>
+    <div style="display:flex;gap:0.75rem;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border)">
+      <button class="btn btn-ghost" onclick="closeDetail()">← Retour</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+const API = 'http://localhost:3000/api';
+let editingId = null;
+let searchTimeout = null;
+let allArticles = [];
+
+// ============ INIT ============
+window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('fDate').value = new Date().toISOString().split('T')[0];
+  checkApiStatus();
+  loadArticles();
+});
+
+// ============ API STATUS ============
+async function checkApiStatus() {
+  try {
+    const r = await fetch(`${API}/articles`);
+    if (r.ok) {
+      document.getElementById('statusDot').className = 'status-dot online';
+      document.getElementById('statusText').textContent = 'API connectée';
+    }
+  } catch {
+    document.getElementById('statusDot').className = 'status-dot offline';
+    document.getElementById('statusText').textContent = 'API hors ligne';
+  }
+}
+
+// ============ LOAD ARTICLES ============
+async function loadArticles() {
+  const grid = document.getElementById('articlesGrid');
+  grid.innerHTML = '<div class="loading"><div class="spinner"></div>Chargement...</div>';
+
+  const categorie = document.getElementById('filterCategorie').value;
+  const auteur = document.getElementById('filterAuteur').value;
+  let url = `${API}/articles`;
+  const params = [];
+  if (categorie) params.push(`categorie=${encodeURIComponent(categorie)}`);
+  if (auteur) params.push(`auteur=${encodeURIComponent(auteur)}`);
+  if (params.length) url += '?' + params.join('&');
+
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    allArticles = data.articles || [];
+    renderArticles(allArticles);
+    updateStats(allArticles);
+    updateAuteurFilter(allArticles);
+  } catch {
+    grid.innerHTML = '<div class="empty-state"><div class="icon">⚠️</div><h3>Impossible de joindre l\'API</h3><p>Assurez-vous que le serveur tourne sur localhost:3000</p></div>';
+  }
+}
+
+// ============ RENDER ============
+function renderArticles(articles) {
+  const grid = document.getElementById('articlesGrid');
+  if (!articles.length) {
+    grid.innerHTML = '<div class="empty-state"><div class="icon">📭</div><h3>Aucun article trouvé</h3><p>Créez votre premier article !</p></div>';
+    return;
+  }
+
+  grid.innerHTML = articles.map((a, i) => `
+    <div class="article-card" style="animation-delay:${i*0.07}s">
+      <div class="card-header">
+        <span class="categorie-badge ${getCatClass(a.categorie)}">${a.categorie}</span>
+        <span class="article-id">#${a.id}</span>
+      </div>
+      <div class="article-title">${escHtml(a.titre)}</div>
+      <div class="article-content">${escHtml(a.contenu)}</div>
+      <div class="card-meta">
+        <span class="meta-item">👤 ${escHtml(a.auteur)}</span>
+        <span class="meta-item">📅 ${formatDate(a.date)}</span>
+      </div>
+      ${a.tags && a.tags.length ? `<div class="tags-row">${a.tags.map(t=>`<span class="tag">#${escHtml(t)}</span>`).join('')}</div>` : ''}
+      <div class="card-actions">
+        <button class="btn btn-ghost" onclick="viewArticle(${a.id})" style="flex:1">Lire →</button>
+        <button class="btn btn-edit" onclick="editArticle(${a.id})">✏️</button>
+        <button class="btn btn-danger" onclick="deleteArticle(${a.id})">🗑️</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ============ STATS ============
+function updateStats(articles) {
+  const cats = [...new Set(articles.map(a => a.categorie))].length;
+  const auteurs = [...new Set(articles.map(a => a.auteur))].length;
+  document.getElementById('statsBar').innerHTML = `
+    <div class="stat-pill">📝 <span>${articles.length}</span> article${articles.length>1?'s':''}</div>
+    <div class="stat-pill">🏷️ <span>${cats}</span> catégorie${cats>1?'s':''}</div>
+    <div class="stat-pill">👥 <span>${auteurs}</span> auteur${auteurs>1?'s':''}</div>
+  `;
+}
+
+function updateAuteurFilter(articles) {
+  const sel = document.getElementById('filterAuteur');
+  const current = sel.value;
+  const auteurs = [...new Set(articles.map(a => a.auteur))];
+  sel.innerHTML = '<option value="">Tous les auteurs</option>' +
+    auteurs.map(a => `<option value="${escHtml(a)}" ${a===current?'selected':''}>${escHtml(a)}</option>`).join('');
+}
+
+// ============ SEARCH ============
+function handleSearch(val) {
+  clearTimeout(searchTimeout);
+  if (!val.trim()) { loadArticles(); return; }
+  searchTimeout = setTimeout(async () => {
+    try {
+      const res = await fetch(`${API}/articles/search?query=${encodeURIComponent(val)}`);
+      const data = await res.json();
+      renderArticles(data.articles || []);
+      updateStats(data.articles || []);
+    } catch { toast('Erreur de recherche', 'error'); }
+  }, 350);
+}
+
+// ============ VIEW DETAIL ============
+async function viewArticle(id) {
+  try {
+    const res = await fetch(`${API}/articles/${id}`);
+    const data = await res.json();
+    const a = data.article;
+    document.getElementById('detailContent').innerHTML = `
+      <div style="display:flex;gap:0.75rem;align-items:center;margin-bottom:1rem;flex-wrap:wrap">
+        <span class="categorie-badge ${getCatClass(a.categorie)}">${a.categorie}</span>
+        <span style="font-size:0.8rem;color:var(--text-muted)">📅 ${formatDate(a.date)} · 👤 ${escHtml(a.auteur)}</span>
+      </div>
+      <h1 style="font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;line-height:1.2;margin-bottom:1rem">${escHtml(a.titre)}</h1>
+      <div class="detail-body">${escHtml(a.contenu)}</div>
+      ${a.tags&&a.tags.length?`<div class="tags-row">${a.tags.map(t=>`<span class="tag">#${escHtml(t)}</span>`).join('')}</div>`:''}
+    `;
+    document.getElementById('detailOverlay').classList.add('active');
+  } catch { toast('Erreur lors du chargement', 'error'); }
+}
+
+function closeDetail() {
+  document.getElementById('detailOverlay').classList.remove('active');
+}
+
+// ============ CREATE / EDIT ============
+function openModal(data = null) {
+  editingId = data ? data.id : null;
+  document.getElementById('modalTitle').textContent = data ? '✏️ Modifier l\'article' : '✨ Nouvel article';
+  document.getElementById('fTitre').value = data?.titre || '';
+  document.getElementById('fAuteur').value = data?.auteur || '';
+  document.getElementById('fContenu').value = data?.contenu || '';
+  document.getElementById('fCategorie').value = data?.categorie || '';
+  document.getElementById('fDate').value = data?.date || new Date().toISOString().split('T')[0];
+  document.getElementById('fTags').value = data?.tags ? data.tags.join(', ') : '';
+  document.getElementById('modalOverlay').classList.add('active');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('active');
+  editingId = null;
+}
+
+async function submitArticle() {
+  const body = {
+    titre: document.getElementById('fTitre').value.trim(),
+    auteur: document.getElementById('fAuteur').value.trim(),
+    contenu: document.getElementById('fContenu').value.trim(),
+    categorie: document.getElementById('fCategorie').value,
+    date: document.getElementById('fDate').value,
+    tags: document.getElementById('fTags').value.split(',').map(t=>t.trim()).filter(Boolean)
+  };
+
+  if (!body.titre || !body.auteur || !body.contenu || !body.categorie || !body.date) {
+    toast('Tous les champs obligatoires doivent être remplis', 'error'); return;
+  }
+
+  try {
+    const url = editingId ? `${API}/articles/${editingId}` : `${API}/articles`;
+    const method = editingId ? 'PUT' : 'POST';
+    const res = await fetch(url, { method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    const data = await res.json();
+    if (res.ok) {
+      toast(editingId ? '✅ Article modifié !' : '🎉 Article publié !', 'success');
+      closeModal();
+      loadArticles();
+    } else {
+      toast(data.error || 'Erreur', 'error');
+    }
+  } catch { toast('Impossible de contacter l\'API', 'error'); }
+}
+
+async function editArticle(id) {
+  try {
+    const res = await fetch(`${API}/articles/${id}`);
+    const data = await res.json();
+    openModal(data.article);
+  } catch { toast('Erreur lors du chargement', 'error'); }
+}
+
+async function deleteArticle(id) {
+  if (!confirm('Supprimer cet article définitivement ?')) return;
+  try {
+    const res = await fetch(`${API}/articles/${id}`, { method: 'DELETE' });
+    if (res.ok) {
+      toast('🗑️ Article supprimé', 'success');
+      loadArticles();
+    }
+  } catch { toast('Erreur lors de la suppression', 'error'); }
+}
+
+// ============ UTILS ============
+function getCatClass(cat) {
+  const map = { 'Technologie':'cat-tech','Développement':'cat-dev','Base de données':'cat-data' };
+  return map[cat] || 'cat-default';
+}
+
+function formatDate(d) {
+  if (!d) return '';
+  const [y,m,day] = d.split('-');
+  return `${day}/${m}/${y}`;
+}
+
+function escHtml(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function toast(msg, type='success') {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `${type==='success'?'✅':'❌'} ${msg}`;
+  c.appendChild(t);
+  setTimeout(() => t.remove(), 3200);
+}
+
+// Fermer modals en cliquant dehors
+document.getElementById('modalOverlay').addEventListener('click', e => { if(e.target===e.currentTarget) closeModal(); });
+document.getElementById('detailOverlay').addEventListener('click', e => { if(e.target===e.currentTarget) closeDetail(); });
+
+// Raccourci clavier Escape
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeModal(); closeDetail(); }
+});
+</script>
+</body>
+</html>
